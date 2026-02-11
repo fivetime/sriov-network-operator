@@ -77,7 +77,7 @@ func NewDrainReconcileController(client client.Client, Scheme *runtime.Scheme, r
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.8.3/pkg/reconcile
 func (dr *DrainReconcile) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	ctx = context.WithValue(ctx, "logger", log.FromContext(ctx))
+	ctx = context.WithValue(ctx, constants.LoggerContextKey, log.FromContext(ctx))
 	reqLogger := log.FromContext(ctx).WithName("Drain Reconcile")
 
 	req.Namespace = vars.Namespace
@@ -103,6 +103,13 @@ func (dr *DrainReconcile) Reconcile(ctx context.Context, req ctrl.Request) (ctrl
 	}
 	if !found {
 		reqLogger.Info("sriovNetworkNodeState not found, don't requeue the request")
+		return ctrl.Result{}, nil
+	}
+
+	// check if use-external-drainer is set for a specific node state
+	if utils.ObjectHasAnnotation(nodeNetworkState, constants.NodeStateExternalDrainerAnnotation, "true") {
+		reqLogger.Info(`nodestate is set with external drainer annotation, don't requeue the request. 
+		Draining will be done externally`, "nodeState", req.Name)
 		return ctrl.Result{}, nil
 	}
 
