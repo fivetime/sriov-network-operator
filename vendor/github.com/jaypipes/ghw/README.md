@@ -14,7 +14,7 @@ Windows. There currently exists partial support for MacOSX.
 
 * No root privileges needed for discovery
 
-  `ghw` goes the extra mile to be useful without root priveleges. We query for
+  `ghw` goes the extra mile to be useful without root privileges. We query for
   host hardware information as directly as possible without relying on shellouts
   to programs like `dmidecode` that require root privileges to execute.
 
@@ -345,8 +345,8 @@ Each `ghw.Partition` struct contains these fields:
 * `ghw.Partition.IsReadOnly` is a bool indicating the partition is read-only
 * `ghw.Partition.Disk` is a pointer to the `ghw.Disk` object associated with
   the partition.
-* `ghw.Partition.UUID` is a string containing the partition UUID on Linux, the
-  partition UUID on MacOS and nothing on Windows. On Linux systems, this is
+* `ghw.Partition.UUID` is a string containing the partition UUID on Linux and MacOS,
+  and the `VolumeSerialNumber` on Windows (e.g. "A8C3D032"). On Linux systems, this is
   derived from the `ID_PART_ENTRY_UUID` [udev][udev] entry for the partition.
 
 [udev]: https://en.wikipedia.org/wiki/Udev
@@ -520,7 +520,7 @@ information about the host computer's networking hardware.
 The `ghw.NetworkInfo` struct contains one field:
 
 * `ghw.NetworkInfo.NICs` is an array of pointers to `ghw.NIC` structs, one
-  for each network interface controller found for the systen
+  for each network interface controller found for the system
 
 Each `ghw.NIC` struct contains the following fields:
 
